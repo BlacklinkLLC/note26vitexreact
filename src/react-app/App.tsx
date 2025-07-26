@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from "react";
 import NoteEditor from "./NoteEditor";
 import NoteList from "./NoteList";
 
