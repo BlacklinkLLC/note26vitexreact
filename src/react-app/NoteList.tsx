@@ -1,38 +1,30 @@
 import React from "react";
-
-type Note = {
-  id: string;
-  title: string;
-  content: string;
-};
+import { Note } from "./App";
 
 type NoteListProps = {
   notes: Note[];
-  activeNoteId: string | null;
-  setActiveNoteId: (id: string) => void;
-  createNote: () => void;
+  selectedNoteId: string | null;
+  selectNote: (id: string) => void;
 };
 
 export default function NoteList({
   notes,
-  activeNoteId,
-  setActiveNoteId,
-  createNote,
+  selectedNoteId,
+  selectNote,
 }: NoteListProps) {
   return (
     <aside>
-      <button onClick={createNote}>New Note</button>
       <ul>
         {notes.map((note) => (
           <li
             key={note.id}
             style={{
               cursor: "pointer",
-              fontWeight: note.id === activeNoteId ? "bold" : "normal",
+              fontWeight: note.id === selectedNoteId ? "bold" : "normal",
             }}
-            onClick={() => setActiveNoteId(note.id)}
+            onClick={() => selectNote(note.id)}
           >
-            {note.title || "Untitled"}
+            {note.title}
           </li>
         ))}
       </ul>

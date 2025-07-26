@@ -1,31 +1,26 @@
-type Note = {
-  id: string;
-  title: string;
-  content: string;
-};
+import React from "react";
+import { Note, NoteField } from "./App";
 
 type NoteEditorProps = {
   note: Note | undefined;
-  updateNote: (id: string, field: string, value: string) => void;
+  updateNote: (id: string, field: NoteField, value: string) => void;
 };
 
 export default function NoteEditor({ note, updateNote }: NoteEditorProps) {
   if (!note) return <div>No note selected</div>;
 
   return (
-    <div className="note-editor">
+    <section>
       <input
-        aria-label="Note title"
-        placeholder="Title"
         value={note.title}
         onChange={(e) => updateNote(note.id, "title", e.target.value)}
+        placeholder="Title"
       />
       <textarea
-        aria-label="Note content"
-        placeholder="Write your note here..."
         value={note.content}
         onChange={(e) => updateNote(note.id, "content", e.target.value)}
+        placeholder="Content"
       />
-    </div>
+    </section>
   );
 }
