@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import './nova-main.css';  // your custom styles
 import NoteEditor from './NoteEditor';
 import NoteList from './NoteList';
 
+type NoteField = "title" | "content";
+
+type Note = {
+  id: string;
+  title: string;
+  content: string;
+};
+
 function App() {
-  const [notes, setNotes] = useState(() => {
+  const [notes, setNotes] = useState<Note[]>(() => {
     const savedNotes = JSON.parse(localStorage.getItem('notes') || '[]');
     if (savedNotes.length === 0) {
       return [{
@@ -16,7 +23,7 @@ function App() {
     return savedNotes;
   });
 
-  const [activeNoteId, setActiveNoteId] = useState(() => {
+  const [activeNoteId, setActiveNoteId] = useState<string | null>(() => {
     const savedNotes = JSON.parse(localStorage.getItem('notes') || '[]');
     return savedNotes.length > 0 ? savedNotes[0].id : null;
   });
@@ -26,17 +33,17 @@ function App() {
   }, [notes]);
 
   const createNote = () => {
-    const newNote = {
+    const newNote: Note = {
       id: Date.now().toString(),
       title: 'Untitled Note',
       content: '',
     };
-    setNotes(prevNotes => [newNote, ...prevNotes]);
+    setNotes((prevNotes: Note[]) => [newNote, ...prevNotes]);
     setActiveNoteId(newNote.id);
   };
 
-  const updateNote = (id: string, field: 'title' | 'content', value: string) => {
-    setNotes(prevNotes =>
+  const updateNote = (id: string, field: NoteField, value: string) => {
+    setNotes((prevNotes: Note[]) =>
       prevNotes.map(note =>
         note.id === id ? { ...note, [field]: value } : note
       )
@@ -53,10 +60,7 @@ function App() {
         setActiveNoteId={setActiveNoteId}
         createNote={createNote}
       />
-      <NoteEditor
-        note={activeNote}
-        updateNote={updateNote}
-      />
+      <NoteEditor note={activeNote} updateNote={updateNote} />
     </div>
   );
 }
