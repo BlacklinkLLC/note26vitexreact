@@ -1,6 +1,6 @@
 import NoteEditor from "./NoteEditor";
 import NoteList from "./NoteList";
-
+import { useState, useEffect } from 'react';
 export type NoteField = "title" | "content";
 
 export type Note = {
