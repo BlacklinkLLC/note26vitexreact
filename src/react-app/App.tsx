@@ -1,65 +1,63 @@
-// src/App.tsx
-
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import cloudflareLogo from "./assets/Cloudflare_Logo.svg";
-import honoLogo from "./assets/hono.svg";
-import "./App.css";
+import React, { useState, useEffect } from 'react';
+import './nova-main.css';  // your custom styles
+import NoteEditor from './NoteEditor';
+import NoteList from './NoteList';
 
 function App() {
-  const [count, setCount] = useState(0);
-  const [name, setName] = useState("unknown");
+  const [notes, setNotes] = useState(() => {
+    const savedNotes = JSON.parse(localStorage.getItem('notes') || '[]');
+    if (savedNotes.length === 0) {
+      return [{
+        id: Date.now().toString(),
+        title: 'Untitled Note',
+        content: '',
+      }];
+    }
+    return savedNotes;
+  });
+
+  const [activeNoteId, setActiveNoteId] = useState(() => {
+    const savedNotes = JSON.parse(localStorage.getItem('notes') || '[]');
+    return savedNotes.length > 0 ? savedNotes[0].id : null;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('notes', JSON.stringify(notes));
+  }, [notes]);
+
+  const createNote = () => {
+    const newNote = {
+      id: Date.now().toString(),
+      title: 'Untitled Note',
+      content: '',
+    };
+    setNotes(prevNotes => [newNote, ...prevNotes]);
+    setActiveNoteId(newNote.id);
+  };
+
+  const updateNote = (id: string, field: 'title' | 'content', value: string) => {
+    setNotes(prevNotes =>
+      prevNotes.map(note =>
+        note.id === id ? { ...note, [field]: value } : note
+      )
+    );
+  };
+
+  const activeNote = notes.find(n => n.id === activeNoteId);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-        <a href="https://hono.dev/" target="_blank">
-          <img src={honoLogo} className="logo cloudflare" alt="Hono logo" />
-        </a>
-        <a href="https://workers.cloudflare.com/" target="_blank">
-          <img
-            src={cloudflareLogo}
-            className="logo cloudflare"
-            alt="Cloudflare logo"
-          />
-        </a>
-      </div>
-      <h1>Vite + React + Hono + Cloudflare</h1>
-      <div className="card">
-        <button
-          onClick={() => setCount((count) => count + 1)}
-          aria-label="increment"
-        >
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <div className="card">
-        <button
-          onClick={() => {
-            fetch("/api/")
-              .then((res) => res.json() as Promise<{ name: string }>)
-              .then((data) => setName(data.name));
-          }}
-          aria-label="get name"
-        >
-          Name from API is: {name}
-        </button>
-        <p>
-          Edit <code>worker/index.ts</code> to change the name
-        </p>
-      </div>
-      <p className="read-the-docs">Click on the logos to learn more</p>
-    </>
+    <div className="section" style={{ display: 'flex', gap: '20px' }}>
+      <NoteList
+        notes={notes}
+        activeNoteId={activeNoteId}
+        setActiveNoteId={setActiveNoteId}
+        createNote={createNote}
+      />
+      <NoteEditor
+        note={activeNote}
+        updateNote={updateNote}
+      />
+    </div>
   );
 }
 
